@@ -19,7 +19,7 @@ public class PeriodeResponseDto {
     private String codeperiode;
     private Boolean estdevoir;
     private Boolean estcompos;
-    private Anneescolaire idanneescolaire;
-    private Sequence idsequence;
-    private Trimestre idTrimestre;
+    private AnneeResponseDto annee;
+    private SequenceResponseDto sequence;
+    private TrimestreResponseDto trimestre;
 }
