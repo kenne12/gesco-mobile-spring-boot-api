@@ -41,15 +41,15 @@ public class Fraisscolarite implements Serializable {
     @Column(name = "inscription_nouveau")
     private Double inscriptionNouveau;
     @JoinColumn(name = "idanneescolaire", referencedColumnName = "idanneescolaire")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Anneescolaire idanneescolaire;
     @JoinColumn(name = "idgroupe", referencedColumnName = "idgroupe")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Groupe idgroupe;
     @JoinColumn(name = "idinstitution", referencedColumnName = "idinstitution")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Institution idinstitution;
-    @OneToMany(mappedBy = "idfraisscolarite", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "idfraisscolarite", fetch = FetchType.EAGER)
     private List<Programmationscolarite> programmationscolariteList;
 
     public Fraisscolarite() {
