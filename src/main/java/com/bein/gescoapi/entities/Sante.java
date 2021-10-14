@@ -7,34 +7,32 @@ package com.bein.gescoapi.entities;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.List;
 
 /**
- *
  * @author Arianne
  */
 @Entity
 @Table(name = "sante")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Sante.findAll", query = "SELECT s FROM Sante s"),
-    @NamedQuery(name = "Sante.findByIdsante", query = "SELECT s FROM Sante s WHERE s.idsante = :idsante"),
-    @NamedQuery(name = "Sante.findByCode", query = "SELECT s FROM Sante s WHERE s.code = :code"),
-    @NamedQuery(name = "Sante.findByNom", query = "SELECT s FROM Sante s WHERE s.nom = :nom")})
+        @NamedQuery(name = "Sante.findAll", query = "SELECT s FROM Sante s"),
+        @NamedQuery(name = "Sante.findByIdsante", query = "SELECT s FROM Sante s WHERE s.idsante = :idsante"),
+        @NamedQuery(name = "Sante.findByCode", query = "SELECT s FROM Sante s WHERE s.code = :code"),
+        @NamedQuery(name = "Sante.findByNom", query = "SELECT s FROM Sante s WHERE s.nom = :nom")})
 public class Sante implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
 
-    @Column(name = "idsante" , nullable = false)
+    @Column(name = "idsante", nullable = false)
     private Integer idsante;
 
-    @Column(name = "code" , length = 254)
+    @Column(name = "code", length = 254)
     private String code;
 
-    @Column(name = "nom" , length = 254)
+    @Column(name = "nom", length = 254)
     private String nom;
     @OneToMany(mappedBy = "idsante", fetch = FetchType.LAZY)
     private List<Inscription> inscriptionList;
@@ -70,14 +68,6 @@ public class Sante implements Serializable {
         this.nom = nom;
     }
 
-    @XmlTransient
-    public List<Inscription> getInscriptionList() {
-        return inscriptionList;
-    }
-
-    public void setInscriptionList(List<Inscription> inscriptionList) {
-        this.inscriptionList = inscriptionList;
-    }
 
     @Override
     public int hashCode() {
@@ -103,5 +93,5 @@ public class Sante implements Serializable {
     public String toString() {
         return "entities.Sante[ idsante=" + idsante + " ]";
     }
-    
+
 }
