@@ -36,6 +36,7 @@ public class Sexe implements Serializable {
 
     @Column(name = "nom" , length = 254)
     private String nom;
+
     @OneToMany(mappedBy = "idsexe", fetch = FetchType.LAZY)
     private List<Eleve> eleveList;
 
@@ -103,5 +104,5 @@ public class Sexe implements Serializable {
     public String toString() {
         return "entities.Sexe[ idsexe=" + idsexe + " ]";
     }
-    
+
 }

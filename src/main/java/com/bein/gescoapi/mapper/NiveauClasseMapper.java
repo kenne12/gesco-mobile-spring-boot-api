@@ -1,6 +1,6 @@
 package com.bein.gescoapi.mapper;
 
-import com.bein.gescoapi.dto.NIveauClasseResponseDto;
+import com.bein.gescoapi.dto.NiveauClasseResponseDto;
 import com.bein.gescoapi.entities.Niveauclasse;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -9,5 +9,5 @@ import org.mapstruct.factory.Mappers;
 public interface NiveauClasseMapper {
     NiveauClasseMapper INSTANCE = Mappers.getMapper(NiveauClasseMapper.class);
 
-    NIveauClasseResponseDto fromEntityToResponse(Niveauclasse niveauclasse);
+    NiveauClasseResponseDto fromEntityToResponse(Niveauclasse niveauclasse);
 }

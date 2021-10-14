@@ -7,36 +7,32 @@ package com.bein.gescoapi.entities;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
-import java.util.List;
 
 /**
- *
  * @author Arianne
  */
 @Entity
 @Table(name = "statut")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Statut.findAll", query = "SELECT s FROM Statut s"),
-    @NamedQuery(name = "Statut.findByIdstatut", query = "SELECT s FROM Statut s WHERE s.idstatut = :idstatut"),
-    @NamedQuery(name = "Statut.findByCode", query = "SELECT s FROM Statut s WHERE s.code = :code"),
-    @NamedQuery(name = "Statut.findByNom", query = "SELECT s FROM Statut s WHERE s.nom = :nom")})
+        @NamedQuery(name = "Statut.findAll", query = "SELECT s FROM Statut s"),
+        @NamedQuery(name = "Statut.findByIdstatut", query = "SELECT s FROM Statut s WHERE s.idstatut = :idstatut"),
+        @NamedQuery(name = "Statut.findByCode", query = "SELECT s FROM Statut s WHERE s.code = :code"),
+        @NamedQuery(name = "Statut.findByNom", query = "SELECT s FROM Statut s WHERE s.nom = :nom")})
 public class Statut implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
 
-    @Column(name = "idstatut" , nullable = false)
+    @Column(name = "idstatut", nullable = false)
     private Integer idstatut;
-    @Column(name = "code" , length = 254)
+    @Column(name = "code", length = 254)
     private String code;
 
-    @Column(name = "nom" , length = 254)
+    @Column(name = "nom", length = 254)
     private String nom;
-    @OneToMany(mappedBy = "idstatut", fetch = FetchType.LAZY)
-    private List<Inscription> inscriptionList;
+
 
     public Statut() {
     }
@@ -69,15 +65,6 @@ public class Statut implements Serializable {
         this.nom = nom;
     }
 
-    @XmlTransient
-    public List<Inscription> getInscriptionList() {
-        return inscriptionList;
-    }
-
-    public void setInscriptionList(List<Inscription> inscriptionList) {
-        this.inscriptionList = inscriptionList;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;
@@ -102,5 +89,5 @@ public class Statut implements Serializable {
     public String toString() {
         return "entities.Statut[ idstatut=" + idstatut + " ]";
     }
-    
+
 }
