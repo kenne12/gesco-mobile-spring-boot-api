@@ -31,9 +31,9 @@ public class NotationRestController {
     }
 
     @PostMapping(path = "/edit-note-by-classe")
-    public void editNoteByClasse(@PathParam( "idclasse") Integer idclasse, @PathParam("idevaluation") long idevaluation, @RequestBody List<NoteRequestPayload> noteRequestPayloads) {
-
-            notationService.editNote(idclasse , idevaluation , noteRequestPayloads);
+    public void editNoteByClasse(@PathParam("idclasse") Integer idclasse,
+                                 @PathParam("idevaluation") long idevaluation, @RequestBody List<NoteRequestPayload> noteRequestPayloads) {
+        notationService.editNote(idclasse, idevaluation, noteRequestPayloads);
     }
 
 }

@@ -1,4 +1,4 @@
-package com.bein.gescoapi;
+package com.bein.gescoapi.utils;
 
 import org.springframework.stereotype.Service;
 
