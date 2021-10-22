@@ -9,45 +9,45 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 /**
- *
  * @author Arianne
  */
 @Entity
 @Table(name = "utilisateur")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Utilisateur.findAll", query = "SELECT u FROM Utilisateur u"),
-    @NamedQuery(name = "Utilisateur.findByIdutilisateur", query = "SELECT u FROM Utilisateur u WHERE u.idutilisateur = :idutilisateur"),
-    @NamedQuery(name = "Utilisateur.findByNom", query = "SELECT u FROM Utilisateur u WHERE u.nom = :nom"),
-    @NamedQuery(name = "Utilisateur.findByPrenom", query = "SELECT u FROM Utilisateur u WHERE u.prenom = :prenom"),
-    @NamedQuery(name = "Utilisateur.findByLogin", query = "SELECT u FROM Utilisateur u WHERE u.login = :login"),
-    @NamedQuery(name = "Utilisateur.findByPassword", query = "SELECT u FROM Utilisateur u WHERE u.password = :password"),
-    @NamedQuery(name = "Utilisateur.findByDatecreation", query = "SELECT u FROM Utilisateur u WHERE u.datecreation = :datecreation"),
-    @NamedQuery(name = "Utilisateur.findByEtat", query = "SELECT u FROM Utilisateur u WHERE u.etat = :etat"),
-    @NamedQuery(name = "Utilisateur.findByPhoto", query = "SELECT u FROM Utilisateur u WHERE u.photo = :photo"),
-    @NamedQuery(name = "Utilisateur.findByPrincipal", query = "SELECT u FROM Utilisateur u WHERE u.principal = :principal")})
+        @NamedQuery(name = "Utilisateur.findAll", query = "SELECT u FROM Utilisateur u"),
+        @NamedQuery(name = "Utilisateur.findByIdutilisateur", query = "SELECT u FROM Utilisateur u WHERE u.idutilisateur = :idutilisateur"),
+        @NamedQuery(name = "Utilisateur.findByNom", query = "SELECT u FROM Utilisateur u WHERE u.nom = :nom"),
+        @NamedQuery(name = "Utilisateur.findByPrenom", query = "SELECT u FROM Utilisateur u WHERE u.prenom = :prenom"),
+        @NamedQuery(name = "Utilisateur.findByLogin", query = "SELECT u FROM Utilisateur u WHERE u.login = :login"),
+        @NamedQuery(name = "Utilisateur.findByPassword", query = "SELECT u FROM Utilisateur u WHERE u.password = :password"),
+        @NamedQuery(name = "Utilisateur.findByDatecreation", query = "SELECT u FROM Utilisateur u WHERE u.datecreation = :datecreation"),
+        @NamedQuery(name = "Utilisateur.findByEtat", query = "SELECT u FROM Utilisateur u WHERE u.etat = :etat"),
+        @NamedQuery(name = "Utilisateur.findByPhoto", query = "SELECT u FROM Utilisateur u WHERE u.photo = :photo"),
+        @NamedQuery(name = "Utilisateur.findByPrincipal", query = "SELECT u FROM Utilisateur u WHERE u.principal = :principal")})
 public class Utilisateur implements Serializable {
     @OneToMany(mappedBy = "idutilisateur", fetch = FetchType.LAZY)
     private List<UserEnseignant> userEnseignantList;
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @Column(name = "idutilisateur" , nullable = false)
+    @Column(name = "idutilisateur", nullable = false)
     private Long idutilisateur;
-    @Column(name = "nom" , length = 254)
+    @Column(name = "nom", length = 254)
     private String nom;
 
-    @Column(name = "prenom" , length = 254)
+    @Column(name = "prenom", length = 254)
     private String prenom;
 
-    @Column(name = "login" , length = 254)
+    @Column(name = "login", length = 254)
     private String login;
 
-    @Column(name = "password" , length = 254)
+    @Column(name = "password", length = 254)
     private String password;
     @Column(name = "datecreation")
     @Temporal(TemporalType.DATE)
@@ -55,7 +55,7 @@ public class Utilisateur implements Serializable {
     @Column(name = "etat")
     private Boolean etat;
 
-    @Column(name = "photo" , length = 300)
+    @Column(name = "photo", length = 300)
     private String photo;
     @Column(name = "principal")
     private Boolean principal;
@@ -66,6 +66,9 @@ public class Utilisateur implements Serializable {
     private Institution idinstitution;
     @OneToMany(mappedBy = "idutilisateur", fetch = FetchType.LAZY)
     private List<Mouchard> mouchardList;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Collection<Role> roles;
 
     public Utilisateur() {
     }
@@ -172,6 +175,15 @@ public class Utilisateur implements Serializable {
         this.mouchardList = mouchardList;
     }
 
+
+    public Collection<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Collection<Role> roles) {
+        this.roles = roles;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -205,5 +217,5 @@ public class Utilisateur implements Serializable {
     public void setUserEnseignantList(List<UserEnseignant> userEnseignantList) {
         this.userEnseignantList = userEnseignantList;
     }
-    
+
 }
