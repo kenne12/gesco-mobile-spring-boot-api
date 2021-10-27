@@ -35,7 +35,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             String authorizationHeader = request.getHeader(AUTHORIZATION);
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
                 try {
-                    System.err.println(authorizationHeader);
                     String token = authorizationHeader.substring("Bearer ".length());
 
                     Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
@@ -61,7 +60,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     new ObjectMapper().writeValue(response.getOutputStream(), error);
                 }
             } else {
-                System.err.println("not tokenize");
                 filterChain.doFilter(request, response);
             }
         }

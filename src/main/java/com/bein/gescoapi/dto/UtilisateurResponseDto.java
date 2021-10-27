@@ -24,6 +24,5 @@ public class UtilisateurResponseDto {
     private Boolean etat;
     private String photo;
     private Boolean principal;
-    private List<Privilege> privilegeList;
-    private Institution idinstitution;
+    private InstitutionResponseDto institution;
 }

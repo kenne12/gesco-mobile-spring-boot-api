@@ -1,11 +1,8 @@
 package com.bein.gescoapi.service.impl;
 
+import com.bein.gescoapi.dto.*;
 import com.bein.gescoapi.utils.Utils;
 import com.bein.gescoapi.dao.*;
-import com.bein.gescoapi.dto.EvaluationResponseDto;
-import com.bein.gescoapi.dto.MatiereNiveauResponseDto;
-import com.bein.gescoapi.dto.NoteRequestPayload;
-import com.bein.gescoapi.dto.NoteResponseDto;
 import com.bein.gescoapi.entities.*;
 import com.bein.gescoapi.mapper.*;
 import com.bein.gescoapi.service.declaration.NotationService;
@@ -16,6 +13,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,7 +22,6 @@ public class NotationServiceImpl implements NotationService {
 
     private final EvaluationRepository evaluationRepository;
     private final ClasseRepository classeRepository;
-    private final PeriodeRepository periodeRepository;
     private final NoteRepository noteRepository;
     private final InscriptionRepository inscriptionRepository;
     private final Utils utils;
@@ -51,38 +48,33 @@ public class NotationServiceImpl implements NotationService {
     public List<NoteResponseDto> getMasqueSaisi(long idEvaluation, int idClasse) {
         Evaluation evaluation = evaluationRepository.getById(idEvaluation);
 
-        if (evaluation != null) {
+        if (!Objects.isNull(evaluation)) {
             Institution institution = evaluation.getIdinstitution();
             boolean notif = (institution.isNotifGroup() && evaluation.getIdmatiereNiveau().isNotification());
             List<Note> notes = noteRepository.findAllByIdEvaluationAndIdClasse(idEvaluation, idClasse);
             if (notes.isEmpty()) {
                 List<Inscription> inscriptions = inscriptionRepository.findInscriptionByIdanneescolaireAndIdclasseEleveActif(evaluation.getIdPeriode().getIdanneescolaire().getIdanneescolaire(), idClasse, evaluation.getIdinstitution().getIdinstitution(), true);
                 if (!inscriptions.isEmpty()) {
-                    return inscriptions.stream().map(i -> {
-                        NoteResponseDto nr = new NoteResponseDto();
-                        nr.setIdnote(0l);
-                        nr.setAppreciation("");
-                        nr.setMarkNotification(notif);
-                        nr.setNotifie(false);
-                        nr.setMax(0d);
-                        nr.setMin(0d);
-                        nr.setMoy(0d);
-                        nr.setInscription(InscriptionMapper.INSTANCE.fromEntityToResponse(i));
-                        nr.setEvaluation(EvaluationMapper.INSTANCE.fromEntityToResponse(evaluation));
-                        nr.setValeur(0d);
-                        return nr;
-                    }).collect(Collectors.toList());
+                    return transformInscriptionToNote(inscriptions, evaluation, notif);
                 }
             } else {
-                List<Inscription> dejasaisie = new ArrayList<>();
-                List<NoteResponseDto> nr = notes.stream().map(n -> {
-                    dejasaisie.add(n.getIdinscription());
+                List<Inscription> inscriptionList = inscriptionRepository.findInscriptionByIdanneescolaireAndIdclasseEleveActif(evaluation.getIdPeriode().getIdanneescolaire().getIdanneescolaire(), idClasse, evaluation.getIdinstitution().getIdinstitution(), true);
+                List<Inscription> inscriptionListWithNoteExist = new ArrayList<>();
+                List<NoteResponseDto> responseDtos = notes.stream().map(n -> {
+                    inscriptionListWithNoteExist.add(n.getIdinscription());
                     NoteResponseDto nTemp = NoteMapper.INSTANCE.fromEntityToResponse(n);
-                    nTemp.setInscription(InscriptionMapper.INSTANCE.fromEntityToResponse(n.getIdinscription()));
+                    InscriptionResponseDto i = InscriptionMapper.INSTANCE.fromEntityToResponse(n.getIdinscription());
+                    i.setEleve(EleveMapper.INSTANCE.fromEntityToDto(n.getIdinscription().getIdeleve()));
+                    nTemp.setInscription(i);
                     nTemp.setEvaluation(EvaluationMapper.INSTANCE.fromEntityToResponse(n.getIdevaluation()));
                     return nTemp;
                 }).collect(Collectors.toList());
-                return nr;
+
+                inscriptionList.removeAll(inscriptionListWithNoteExist);
+                if (!inscriptionList.isEmpty()) {
+                    responseDtos.addAll(this.transformInscriptionToNote(inscriptionList, evaluation, true));
+                }
+                return responseDtos;
             }
         }
         return new ArrayList<>();
@@ -91,7 +83,6 @@ public class NotationServiceImpl implements NotationService {
     @Transactional
     @Override
     public void editNote(int idClasse, long idEvaluation, List<NoteRequestPayload> noteRequestPayloads) {
-
         if (!noteRequestPayloads.isEmpty()) {
             Classe classe = classeRepository.getById(idClasse);
             if (classe != null) {
@@ -120,11 +111,36 @@ public class NotationServiceImpl implements NotationService {
                             }
                         }
                     }
-
                     this.initMinMaxAverage(evaluation, idClasse);
                 }
             }
         }
+    }
+
+    @Override
+    public List<NoteResponseDto> getMarksByIdclasseAndIdevaluation(int idClasse, long idEvaluation) {
+        return noteRepository.findAllByIdEvaluationAndIdClasse(idEvaluation, idClasse)
+                .stream().map(n -> {
+                    NoteResponseDto nTemp = NoteMapper.INSTANCE.fromEntityToResponse(n);
+                    nTemp.setEvaluation(EvaluationMapper.INSTANCE.fromEntityToResponse(n.getIdevaluation()));
+                    InscriptionResponseDto iDto = InscriptionMapper.INSTANCE.fromEntityToResponse(n.getIdinscription());
+                    iDto.setEleve(EleveMapper.INSTANCE.fromEntityToDto(n.getIdinscription().getIdeleve()));
+                    nTemp.setInscription(iDto);
+                    return nTemp;
+                }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<NoteResponseDto> getStudentMarksBySequence(int idInscription, int idPeriode) {
+        return noteRepository.findStudentMarksByPeriode(idInscription, idPeriode)
+                .stream().map(n -> {
+                    NoteResponseDto nr = NoteMapper.INSTANCE.fromEntityToResponse(n);
+                    nr.setEvaluation(EvaluationMapper.INSTANCE.fromEntityToResponse(n.getIdevaluation()));
+                    InscriptionResponseDto iDto = InscriptionMapper.INSTANCE.fromEntityToResponse(n.getIdinscription());
+                    iDto.setEleve(EleveMapper.INSTANCE.fromEntityToDto(n.getIdinscription().getIdeleve()));
+                    nr.setInscription(iDto);
+                    return nr;
+                }).collect(Collectors.toList());
     }
 
     private Long nextIdNote() {
@@ -144,7 +160,6 @@ public class NotationServiceImpl implements NotationService {
     }
 
     private void initMinMaxAverage(Evaluation evaluation, Integer idClasse) {
-
         try {
 
             Double min = noteRepository.findMin(idClasse, evaluation.getIdevaluation());
@@ -197,5 +212,28 @@ public class NotationServiceImpl implements NotationService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+
+    private List<NoteResponseDto> transformInscriptionToNote(List<Inscription> inscriptions, Evaluation evaluation, boolean notif) {
+        return inscriptions.stream().map(i -> {
+            NoteResponseDto nr = new NoteResponseDto();
+            nr.setIdnote(0l);
+            nr.setAppreciation("");
+            nr.setMarkNotification(notif);
+            nr.setNotifie(false);
+            nr.setMax(0d);
+            nr.setMin(0d);
+            nr.setMoy(0d);
+
+            InscriptionResponseDto iDto = InscriptionMapper.INSTANCE.fromEntityToResponse(i);
+            iDto.setEleve(EleveMapper.INSTANCE.fromEntityToDto(i.getIdeleve()));
+
+            nr.setInscription(iDto);
+            nr.setEvaluation(EvaluationMapper.INSTANCE.fromEntityToResponse(evaluation));
+            nr.setValeur(0d);
+            return nr;
+        }).collect(Collectors.toList());
+
     }
 }

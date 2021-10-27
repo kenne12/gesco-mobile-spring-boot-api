@@ -13,4 +13,9 @@ public interface NotationService {
     List<NoteResponseDto> getMasqueSaisi(long idEvaluation, int idClasse);
 
     void editNote(int idClasse, long idEvaluation, List<NoteRequestPayload> noteRequestPayloads);
+
+
+    List<NoteResponseDto> getMarksByIdclasseAndIdevaluation(int idClasse, long idEvaluation);
+
+    List<NoteResponseDto> getStudentMarksBySequence(int idInscription, int idPeriode);
 }

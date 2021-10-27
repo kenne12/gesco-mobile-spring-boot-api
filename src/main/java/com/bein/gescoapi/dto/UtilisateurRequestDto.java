@@ -2,13 +2,16 @@ package com.bein.gescoapi.dto;
 
 import com.bein.gescoapi.entities.Institution;
 import com.bein.gescoapi.entities.Privilege;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
 
-@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
 public class UtilisateurRequestDto {
     private Long idutilisateur;
@@ -16,9 +19,7 @@ public class UtilisateurRequestDto {
     private String prenom;
     private String login;
     private String password;
-    private Date datecreation;
+    private String repeatPassword;
     private Boolean etat;
-    private String photo;
-    private Boolean principal;
-    private Integer idinstitution;
+    private Integer institution;
 }

@@ -29,16 +29,11 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
     private final AuthenticationManager authenticationManager;
 
-    private final ShaHash shaHash;
-
-
     /*private final JwtProvider jwtProvider;*/
 
-    public CustomAuthenticationFilter(AuthenticationManager authenticationManager, ShaHash shaHash) {
+    public CustomAuthenticationFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
-        this.shaHash = shaHash;
     }
-
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -46,7 +41,9 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         String password = request.getParameter("password");
         log.info("Username is : {}", username);
         log.info("Password is : {}", password);
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+        ShaHashImpl shaHash = new ShaHashImpl();
+
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, shaHash.hash(password));
         return authenticationManager.authenticate(authenticationToken);
     }
 
@@ -64,14 +61,14 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         String accessToken = JWT.create()
                 .withSubject(user.getUsername())
                 /*.withExpiresAt(new Date(System.currentTimeMillis() + jwtProvider.getJwtExpirationInMillis()))*/
-                .withExpiresAt(new Date(System.currentTimeMillis() + 90000))
+                .withExpiresAt(new Date(System.currentTimeMillis() + 900000))
                 .withIssuer(request.getRequestURL().toString())
                 .withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .sign(algorithm);
 
         Map<String, String> tokens = new HashMap<>();
         tokens.put("access_token", "Bearer " + accessToken);
-        tokens.put("expires_at", new Date(System.currentTimeMillis() + 90000).toString());
+        tokens.put("expires_at", new Date(System.currentTimeMillis() + 900000).toString());
         response.setContentType("APPLICATION_JSON_VALUE");
         new ObjectMapper().writeValue(response.getOutputStream(), tokens);
     }

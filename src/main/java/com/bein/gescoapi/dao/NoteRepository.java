@@ -23,4 +23,7 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
 
     @Query("select avg (n.valeur) from Note n where n.idinscription.idclasse.idclasse=:idclasse and n.idevaluation.idevaluation=:idevaluation")
     Double findAverage(@Param("idclasse") Integer idclasse, @Param("idevaluation") Long idevaluation);
+
+    @Query("select n from Note n where n.idinscription.idinscription=:idinscription AND n.idevaluation.idPeriode.idPeriode=:idperiode order by n.idevaluation.idmatiereNiveau.idmatiere.nom")
+    List<Note> findStudentMarksByPeriode(@Param("idinscription") int idinscription, @Param("idperiode") int idperiode);
 }

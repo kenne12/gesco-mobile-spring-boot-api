@@ -21,19 +21,29 @@ public class NotationRestController {
     }
 
     @GetMapping("/get-list-evaluations")
-    public List<EvaluationResponseDto> findEvaluationByIdcalasseAndIperiode(@PathParam(value = "idclasse") int idClasse, @PathParam("idperiode") int idPeriode) {
-        return notationService.findEvaluationByIdClasseAndIdperiode(idClasse, idPeriode);
+    public List<EvaluationResponseDto> findEvaluationByIdcalasseAndIperiode(@PathParam("idclasse") int idclasse, @PathParam("idperiode") int idperiode) {
+        return notationService.findEvaluationByIdClasseAndIdperiode(idclasse, idperiode);
     }
 
     @GetMapping("/get-masque-saisi")
-    public List<NoteResponseDto> getMasqueSaisie(@PathParam("idEvaluation") long idEvaluation, int idClasse) {
-        return notationService.getMasqueSaisi(idEvaluation, idClasse);
+    public List<NoteResponseDto> getMasqueSaisie(@PathParam("idevaluation") long idevaluation, @PathParam("idclasse") int idclasse) {
+        return notationService.getMasqueSaisi(idevaluation, idclasse);
     }
 
     @PostMapping(path = "/edit-note-by-classe")
     public void editNoteByClasse(@PathParam("idclasse") Integer idclasse,
                                  @PathParam("idevaluation") long idevaluation, @RequestBody List<NoteRequestPayload> noteRequestPayloads) {
         notationService.editNote(idclasse, idevaluation, noteRequestPayloads);
+    }
+
+    @GetMapping("/get-class-mark-by-evaluation")
+    public List<NoteResponseDto> getClassMarksBySequence(@PathParam("idclasse") Integer idclasse, @PathParam("idevaluation") Long idevaluation) {
+        return notationService.getMarksByIdclasseAndIdevaluation(idclasse, idevaluation);
+    }
+
+    @GetMapping("/get-student-mark-by-sequence")
+    public List<NoteResponseDto> getStudentMarksBySequence(@PathParam("idinscription") Integer idinscription, @PathParam("idperiode") Integer idperiode) {
+        return notationService.getStudentMarksBySequence(idinscription, idperiode);
     }
 
 }
